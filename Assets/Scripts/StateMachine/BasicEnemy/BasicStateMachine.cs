@@ -15,7 +15,6 @@ public class BasicStateMachine : AbstractStateMachine
 
     protected override void DefineStateMachine()
     {
-        // hello test
         // States
         Node<IStateDescription> idleState = new Node<IStateDescription>( new IdleState()
         {

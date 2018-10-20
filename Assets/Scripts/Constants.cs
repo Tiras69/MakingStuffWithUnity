@@ -4,6 +4,11 @@ using UnityEngine;
 
 public static class Constants
 {
+    public static class FileNames
+    {
+        public const string CommandFileName = "CommandsSpecifier.xml";
+    }
+
     public static class ProceduralsParameters
     {
         public const float RoomSize = 32.0f;
