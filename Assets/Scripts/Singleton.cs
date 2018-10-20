@@ -1,77 +1,72 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace Kiwiii.ZombieEscape.CommonServices
+public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
 {
-    public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
+    private static T m_instance;
+
+    private static object m_lock = new object();
+
+    public static T Instance
     {
-        private static T m_instance;
-
-        private static object m_lock = new object();
-
-        public static T Instance
+        get
         {
-            get
+            if ( applicationIsQuitting )
             {
-                if ( applicationIsQuitting )
-                {
-                    Debug.LogWarning( "[Singleton] Instance '" + typeof( T ) +
-                        "' already destroyed on application quit." +
-                        " Won't create again - returning null." );
-                    return null;
-                }
+                Debug.LogWarning( "[Singleton] Instance '" + typeof( T ) +
+                    "' already destroyed on application quit." +
+                    " Won't create again - returning null." );
+                return null;
+            }
 
-                lock ( m_lock )
+            lock ( m_lock )
+            {
+                if ( m_instance == null )
                 {
-                    if ( m_instance == null )
+                    m_instance = (T) FindObjectOfType( typeof( T ) );
+
+                    if ( FindObjectsOfType( typeof( T ) ).Length > 1 )
                     {
-                        m_instance = (T) FindObjectOfType( typeof( T ) );
-
-                        if ( FindObjectsOfType( typeof( T ) ).Length > 1 )
-                        {
-                            Debug.LogError( "[Singleton] Something went really wrong " +
-                                " - there should never be more than 1 singleton!" +
-                                " Reopening the scene might fix it." );
-                            return m_instance;
-                        }
-
-                        if ( m_instance == null )
-                        {
-                            GameObject singleton = new GameObject();
-                            m_instance = singleton.AddComponent<T>();
-                            singleton.name = "(singleton) " + typeof( T ).ToString();
-
-                            DontDestroyOnLoad( singleton );
-
-                            Debug.Log( "[Singleton] An instance of " + typeof( T ) +
-                                " is needed in the scene, so '" + singleton +
-                                "' was created with DontDestroyOnLoad." );
-                        }
-                        else
-                        {
-                            Debug.Log( "[Singleton] Using instance already created: " +
-                                m_instance.gameObject.name );
-                        }
+                        Debug.LogError( "[Singleton] Something went really wrong " +
+                            " - there should never be more than 1 singleton!" +
+                            " Reopening the scene might fix it." );
+                        return m_instance;
                     }
 
-                    return m_instance;
+                    if ( m_instance == null )
+                    {
+                        GameObject singleton = new GameObject();
+                        m_instance = singleton.AddComponent<T>();
+                        singleton.name = "(singleton) " + typeof( T ).ToString();
+
+                        DontDestroyOnLoad( singleton );
+
+                        Debug.Log( "[Singleton] An instance of " + typeof( T ) +
+                            " is needed in the scene, so '" + singleton +
+                            "' was created with DontDestroyOnLoad." );
+                    }
+                    else
+                    {
+                        Debug.Log( "[Singleton] Using instance already created: " +
+                            m_instance.gameObject.name );
+                    }
                 }
+
+                return m_instance;
             }
         }
+    }
 
-        private static bool applicationIsQuitting = false;
-        /// <summary>
-        /// When Unity quits, it destroys objects in a random order.
-        /// In principle, a Singleton is only destroyed when application quits.
-        /// If any script calls Instance after it have been destroyed, 
-        ///   it will create a buggy ghost object that will stay on the Editor scene
-        ///   even after stopping playing the Application. Really bad!
-        /// So, this was made to be sure we're not creating that buggy ghost object.
-        /// </summary>
-        public void OnDestroy()
-        {
-            applicationIsQuitting = true;
-        }
+    private static bool applicationIsQuitting = false;
+    /// <summary>
+    /// When Unity quits, it destroys objects in a random order.
+    /// In principle, a Singleton is only destroyed when application quits.
+    /// If any script calls Instance after it have been destroyed, 
+    ///   it will create a buggy ghost object that will stay on the Editor scene
+    ///   even after stopping playing the Application. Really bad!
+    /// So, this was made to be sure we're not creating that buggy ghost object.
+    /// </summary>
+    public void OnDestroy()
+    {
+        applicationIsQuitting = true;
     }
 }
