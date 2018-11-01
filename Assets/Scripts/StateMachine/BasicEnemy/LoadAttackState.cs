@@ -9,11 +9,10 @@ public enum LoadAttackPerception : int
     Hurt = 3
 }
 
-public class LoadAttackState : IStateDescription
+public class LoadAttackState : AbstractStateDescription
 {
-    public float SightRadius { get; set; }
-    public float ChargeTime { get; set; }
-    public GameObject GameObject { get; set; }
+    public float m_sightRadius;
+    public float m_chargeTime;
 
     private Material m_material;
     private float m_chargeTimer;
@@ -21,27 +20,27 @@ public class LoadAttackState : IStateDescription
     private bool m_isHurt;
     private NavMeshAgent m_agent;
 
-    public void ExecuteBehaviour()
+    private void Update()
     {
-        m_agent.SetDestination( GameObject.transform.position );
+        m_agent.SetDestination( transform.position );
         m_material.color = (m_chargeTimer % 0.5f) > 0.25 ? Color.white : Color.red;
         m_chargeTimer += Time.deltaTime;
     }
 
-    public int GetPerceptionState()
+    public override int GetPerceptionState()
     {
         if( m_isHurt)
         {
             return (int) LoadAttackPerception.Hurt;
         }
 
-        Collider[] colliders = Physics.OverlapSphere( GameObject.transform.position, SightRadius);
+        Collider[] colliders = Physics.OverlapSphere( transform.position, m_sightRadius);
         if( colliders == null || colliders.Length == 0)
         {
             return (int) LoadAttackPerception.EnemyToFar;
         }
 
-        if (m_chargeTimer <= ChargeTime)
+        if (m_chargeTimer <= m_chargeTime)
         {
             return (int) LoadAttackPerception.IsLoading;
         }
@@ -51,21 +50,21 @@ public class LoadAttackState : IStateDescription
         }
     }
 
-    public void OnStateLeave()
+    private void OnDisable()
     {
         m_material.color = m_initialColor;
     }
 
-    public void OnStateStart()
+    private void OnEnable()
     {
         m_isHurt = false;
         m_chargeTimer = 0.0f;
-        m_material = GameObject.GetComponent<Renderer>().material;
+        m_material = GetComponent<Renderer>().material;
         m_initialColor = m_material.color;
-        m_agent = GameObject.GetComponent<NavMeshAgent>();
+        m_agent = GetComponent<NavMeshAgent>();
     }
 
-    public void OnCollision( Collision _collision )
+    private void OnCollisionEnter( Collision _collision )
     {
         if( _collision.gameObject.tag == Constants.Tags.Bullet)
         {

@@ -285,10 +285,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3bf8ad8dda36b4049ae1f79fd302543d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_twistNumber: 0
   m_width: 1
   m_thickness: 0.2
   m_radius: 10
-  m_detail: 50
+  m_detail: 5
 --- !u!23 &2024634842
 MeshRenderer:
   m_ObjectHideFlags: 0

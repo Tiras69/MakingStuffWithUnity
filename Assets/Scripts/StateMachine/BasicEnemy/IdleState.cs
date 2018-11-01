@@ -9,27 +9,26 @@ public enum IdlePerception : int
     Hurt = 2
 }
 
-public class IdleState : IStateDescription {
-
-    public float SightRadius {get; set;}
-    public GameObject GameObject { get; set; }
+public class IdleState : AbstractStateDescription
+{
+    public float m_sightRadius;
 
     private NavMeshAgent m_agent;
     private bool m_isHurtForNextFrame;
 
-    public void ExecuteBehaviour()
+    public void Update()
     {
-        m_agent.SetDestination( GameObject.transform.position );
+        m_agent.SetDestination( transform.position );
     }
 
-    public int GetPerceptionState()
+    public override int GetPerceptionState()
     {
         if(m_isHurtForNextFrame)
         {
             return (int) IdlePerception.Hurt;
         }
 
-        Collider[] colliders = Physics.OverlapSphere(GameObject.transform.position, SightRadius);
+        Collider[] colliders = Physics.OverlapSphere(transform.position, m_sightRadius);
         if(colliders.Where(x => x.tag == Constants.Tags.Player).Any())
         {
             return (int) IdlePerception.PlayerInSight;
@@ -40,7 +39,7 @@ public class IdleState : IStateDescription {
         }
     }
 
-    public void OnCollision( Collision _collision )
+    public void OnCollisionEnter( Collision _collision )
     {
         if( _collision.gameObject.tag == Constants.Tags.Bullet)
         {
@@ -48,14 +47,9 @@ public class IdleState : IStateDescription {
         }
     }
 
-    public void OnStateLeave()
-    {
-
-    }
-
-    public void OnStateStart()
+    public void OnEnable()
     {
         m_isHurtForNextFrame = false;
-        m_agent = GameObject.GetComponent<NavMeshAgent>();
+        m_agent = GetComponent<NavMeshAgent>();
     }
 }

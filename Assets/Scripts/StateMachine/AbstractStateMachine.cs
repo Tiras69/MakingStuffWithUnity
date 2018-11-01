@@ -3,48 +3,39 @@
 public abstract class AbstractStateMachine : MonoBehaviour
 {
 
-    private Node<IStateDescription> m_currentNode;
-    protected Graph<IStateDescription> m_stateMachine;
+    private Node<AbstractStateDescription> m_currentNode;
+    protected Graph<AbstractStateDescription> m_stateMachine;
 
     protected abstract void DefineStateMachine();
-
-    private Collision m_currentCollision;
-
+    
     void Start()
     {
-        m_currentCollision = null;
-        m_stateMachine = new Graph<IStateDescription>();
+        m_stateMachine = new Graph<AbstractStateDescription>();
         DefineStateMachine();
         m_currentNode = m_stateMachine.GetFirstNode();
-        m_currentNode.Data.OnStateStart();
+        m_currentNode.Data.enabled = true;
     }
     
-    void Update()
-    {
-        m_currentNode.Data.ExecuteBehaviour();
-        if( m_currentCollision != null)
-        {
-            m_currentNode.Data.OnCollision( m_currentCollision );
-            m_currentCollision = null;
-        }
-        Node<IStateDescription> nextNode = m_currentNode.GetNextState( m_currentNode.Data.GetPerceptionState() );
+    void LateUpdate()
+    { 
+        // Physics and collisions are now handle in the differents components.
+
+        // We consider now that the current node execute Update in the frame because the
+        // component is enabled.
+
+        Node<AbstractStateDescription> nextNode = m_currentNode.GetNextState( m_currentNode.Data.GetPerceptionState() );
         if ( nextNode != null )
         {
             if ( nextNode != m_currentNode )
             {
-                m_currentNode.Data.OnStateLeave();
+                m_currentNode.Data.enabled = false;
                 m_currentNode = nextNode;
-                m_currentNode.Data.OnStateStart();
+                m_currentNode.Data.enabled = true;
             }
         }
         else
         {
             Debug.Log( "Warning impossible to access the next state" );
         }
-    }
-
-    private void OnCollisionEnter( Collision collision )
-    {
-        m_currentCollision = collision;
     }
 }

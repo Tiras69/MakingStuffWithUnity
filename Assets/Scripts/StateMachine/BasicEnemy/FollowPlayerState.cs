@@ -10,23 +10,25 @@ public enum FollowPlayerPerception : int
     Hurt = 3
 }
 
-public class FollowPlayerState : IStateDescription
+public class FollowPlayerState : AbstractStateDescription
 {
 
-    public float AttackRadius { get; set; }
-    public float SightRadius { get; set; }
-    public GameObject GameObject { get; set; }
+    public float m_attackRadius;
+    public float m_sightRadius;
 
     private NavMeshAgent m_agent;
     private FollowPlayerPerception m_currentState;
 
-    public void ExecuteBehaviour()
+    private void Update()
     {
-        Collider[] colliders = Physics.OverlapSphere( GameObject.transform.position, SightRadius);
+        if( m_currentState == FollowPlayerPerception.Hurt)
+        { return; }
+
+        Collider[] colliders = Physics.OverlapSphere( transform.position, m_sightRadius);
         if ( colliders == null || colliders.Length == 0 )
         {
             m_currentState = FollowPlayerPerception.LostPlayer;
-            m_agent.destination = GameObject.transform.position;
+            m_agent.destination = transform.position;
             return;
         }
 
@@ -35,12 +37,12 @@ public class FollowPlayerState : IStateDescription
         if ( playerCollider == null )
         {
             m_currentState = FollowPlayerPerception.LostPlayer;
-            m_agent.destination = GameObject.transform.position;
+            m_agent.destination = transform.position;
             return;
         }
         else
         {
-            if ( Vector3.Distance( GameObject.transform.position, playerCollider.transform.position ) <= AttackRadius )
+            if ( Vector3.Distance( transform.position, playerCollider.transform.position ) <= m_attackRadius )
             {
                 m_currentState = FollowPlayerPerception.PlayerIsCloseEnough;
             }
@@ -53,25 +55,22 @@ public class FollowPlayerState : IStateDescription
         m_agent.destination = playerCollider.transform.position;
     }
 
-    public int GetPerceptionState()
+    public override int GetPerceptionState()
     {
         return (int) m_currentState;
     }
 
-    public void OnStateLeave()
+    private void OnEnable()
     {
-    }
-
-    public void OnStateStart()
-    {
-        m_agent = GameObject.GetComponent<NavMeshAgent>();
+        m_currentState = FollowPlayerPerception.ChasePlayer;
+        m_agent = GetComponent<NavMeshAgent>();
         if ( m_agent == null )
         {
             Debug.Log( "NavMash Agent Component doesn't exists" );
         }
     }
 
-    public void OnCollision( Collision _collision )
+    private void OnCollisionEnter( Collision _collision )
     {
         if(_collision.gameObject.tag == Constants.Tags.Bullet)
         {

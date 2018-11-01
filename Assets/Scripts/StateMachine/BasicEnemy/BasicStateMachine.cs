@@ -1,57 +1,39 @@
 ﻿using UnityEngine;
 
+[RequireComponent( typeof( IdleState ) )]
+[RequireComponent( typeof( FollowPlayerState ) )]
+[RequireComponent( typeof( LoadAttackState ) )]
+[RequireComponent( typeof( TackleAttackState ) )]
+[RequireComponent( typeof( HurtState ) )]
 public class BasicStateMachine : AbstractStateMachine
 {
 
-    public float m_attackPower;
-    public float m_attackTime;
-
-    public float m_stunTime;
-    public float m_sightRadius;
-    public float m_attackRadius;
-    public float m_loadAttackTime;
+    // public float m_attackPower;
+    // public float m_attackTime;
+    // 
+    // public float m_stunTime;
+    // public float m_sightRadius;
+    // public float m_attackRadius;
+    // public float m_loadAttackTime;
 
     protected override void DefineStateMachine()
     {
         // States
-        Node<IStateDescription> idleState = new Node<IStateDescription>( new IdleState()
-        {
-            GameObject = this.gameObject,
-            SightRadius = m_sightRadius
-        });
+        Node<AbstractStateDescription> idleState = new Node<AbstractStateDescription>( GetComponent<IdleState>() );
+        
         m_stateMachine.AddNode( idleState );
 
-        Node<IStateDescription> followPlayerState = new Node<IStateDescription>( new FollowPlayerState()
-        {
-            GameObject = this.gameObject,
-            SightRadius = m_sightRadius,
-            AttackRadius = m_attackRadius
-        });
+        Node<AbstractStateDescription> followPlayerState = new Node<AbstractStateDescription>( GetComponent<FollowPlayerState>() );
         m_stateMachine.AddNode( followPlayerState );
 
-        Node<IStateDescription> loadAttackState = new Node<IStateDescription>( new LoadAttackState()
-        {
-            GameObject = this.gameObject,
-            ChargeTime = m_loadAttackTime,
-            SightRadius = m_sightRadius
-        });
+        Node<AbstractStateDescription> loadAttackState = new Node<AbstractStateDescription>( GetComponent<LoadAttackState>() );
         m_stateMachine.AddNode( loadAttackState );
 
-        Node<IStateDescription> tackleAttackState = new Node<IStateDescription>( new TackleAttackState()
-        {
-            GameObject = this.gameObject,
-            AttackPower = m_attackPower,
-            EndTime = m_attackTime,
-            SightRadius = m_sightRadius
-        } );
+        Node<AbstractStateDescription> tackleAttackState = new Node<AbstractStateDescription>( GetComponent<TackleAttackState>() );
         m_stateMachine.AddNode( tackleAttackState );
 
-        Node<IStateDescription> hurtState = new Node<IStateDescription>( new HurtState()
-        {
-            GameObject = this.gameObject,
-            StunTime = m_stunTime
-        });
-        m_stateMachine.AddNode( hurtState ); 
+        Node<AbstractStateDescription> hurtState = new Node<AbstractStateDescription>( GetComponent<HurtState>());
+        m_stateMachine.AddNode( hurtState );
 
         // Transitions
         m_stateMachine.AddEdge( idleState, idleState, (int) IdlePerception.Nothing );
@@ -75,10 +57,10 @@ public class BasicStateMachine : AbstractStateMachine
         m_stateMachine.AddEdge( hurtState, idleState, (int) HurtPerception.Recover );
     }
 
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere( this.transform.position, m_sightRadius );
-    }
+    // private void OnDrawGizmos()
+    // {
+    //     Gizmos.color = Color.green;
+    //     Gizmos.DrawWireSphere( this.transform.position, m_sightRadius );
+    // }
 
 }

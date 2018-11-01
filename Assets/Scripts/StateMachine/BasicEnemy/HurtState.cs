@@ -7,23 +7,22 @@ public enum HurtPerception : int
     Recover = 1
 }
 
-public class HurtState : IStateDescription {
-
-    public GameObject GameObject { get; set; }
-    public float StunTime { get; set; }
+public class HurtState : AbstractStateDescription
+{
+    public float m_stunTime;
 
     private float m_stunTimer;
     private Color m_initialColor;
     private Material m_material;
 
-    public void ExecuteBehaviour()
+    private void Update()
     {
         m_stunTimer += Time.deltaTime;
     }
 
-    public int GetPerceptionState()
+    public override int GetPerceptionState()
     {
-        if( m_stunTimer >= StunTime)
+        if( m_stunTimer >= m_stunTime)
         {
             return (int) HurtPerception.Recover;
         }
@@ -32,23 +31,18 @@ public class HurtState : IStateDescription {
             return (int) HurtPerception.Stuned;
         }
     }
-
-    public void OnCollision( Collision _collision )
-    {
-
-    }
-
-    public void OnStateLeave()
+    
+    private void OnDisable()
     {
         m_material.color = m_initialColor;
     }
 
-    public void OnStateStart()
+    private void OnEnable()
     {
         m_stunTimer = 0.0f;
-        m_material = GameObject.GetComponent<Renderer>().material;
+        m_material = GetComponent<Renderer>().material;
         m_initialColor = m_material.color;
         m_material.color = Color.yellow;
-        GameObject.GetComponent<NavMeshAgent>().SetDestination( GameObject.transform.position );
+        GetComponent<NavMeshAgent>().SetDestination( transform.position );
     }
 }

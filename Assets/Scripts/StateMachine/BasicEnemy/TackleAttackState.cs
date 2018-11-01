@@ -8,13 +8,11 @@ public enum TackleAttackPerception : int
     EndAttack = 1
 }
 
-public class TackleAttackState : IStateDescription
+public class TackleAttackState : AbstractStateDescription
 {
-
-    public float SightRadius { get; set; }
-    public float AttackPower { get; set; }
-    public float EndTime { get; set; }
-    public GameObject GameObject { get; set; }
+    public float m_sightRadius;
+    public float m_attackPower;
+    public float m_endTime;
 
     private Vector3 m_directionAttack;
     private float m_initialSpeed;
@@ -25,22 +23,22 @@ public class TackleAttackState : IStateDescription
     private TackleAttackPerception m_currentState;
     private Color m_initialColor;
 
-    public void ExecuteBehaviour()
+    private void Update()
     {
-        m_rigidbody.velocity = m_directionAttack * AttackPower;
+        m_rigidbody.velocity = m_directionAttack * m_attackPower;
         m_safetyEndTimer += Time.deltaTime;
-        if ( m_safetyEndTimer >= EndTime )
+        if ( m_safetyEndTimer >= m_endTime )
         {
             m_currentState = TackleAttackPerception.EndAttack;
         }
     }
 
-    public int GetPerceptionState()
+    public override int GetPerceptionState()
     {
         return (int) m_currentState;
     }
 
-    public void OnStateLeave()
+    private void OnDisable()
     {
         m_material.color = m_initialColor;
         m_agent.speed = m_initialSpeed;
@@ -48,18 +46,18 @@ public class TackleAttackState : IStateDescription
         m_rigidbody.velocity = Vector3.zero;
     }
 
-    public void OnStateStart()
+    private void OnEnable()
     {
         m_safetyEndTimer = 0.0f;
-        m_material = GameObject.GetComponent<Renderer>().material;
+        m_material = GetComponent<Renderer>().material;
         m_initialColor = m_material.color;
         m_material.color = Color.yellow;
-        m_rigidbody = GameObject.GetComponent<Rigidbody>();
-        m_agent = GameObject.GetComponent<NavMeshAgent>();
+        m_rigidbody = GetComponent<Rigidbody>();
+        m_agent = GetComponent<NavMeshAgent>();
         m_agent.enabled = false;
         m_initialSpeed = m_agent.speed;
 
-        Collider[] colliders = Physics.OverlapSphere( GameObject.transform.position, SightRadius);
+        Collider[] colliders = Physics.OverlapSphere( transform.position, m_sightRadius);
         if ( colliders == null || colliders.Length == 0 )
         {
             m_currentState = TackleAttackPerception.EndAttack;
@@ -75,16 +73,11 @@ public class TackleAttackState : IStateDescription
         }
         else
         { 
-            m_directionAttack = playerCollider.transform.position - GameObject.transform.position;
+            m_directionAttack = playerCollider.transform.position - transform.position;
             m_directionAttack.y = 0.0f;
             m_directionAttack.Normalize();
 
             m_currentState = TackleAttackPerception.Attacking;
         }
-    }
-
-    public void OnCollision( Collision _collision )
-    {
-
     }
 }

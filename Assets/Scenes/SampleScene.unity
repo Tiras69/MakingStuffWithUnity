@@ -368,7 +368,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 1333598969306730, guid: 26e70809753c7e94f8b44a3e738e0355, type: 2}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1333598969306730, guid: 26e70809753c7e94f8b44a3e738e0355, type: 2}
       propertyPath: m_StaticEditorFlags
@@ -526,7 +526,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1893832241
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -621,9 +621,30 @@ Prefab:
       propertyPath: m_RootOrder
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 1583529221497494, guid: ef78beac096a1e04db21858ccae4babf, type: 2}
-      propertyPath: m_IsActive
-      value: 0
+    - target: {fileID: 114959302888897058, guid: ef78beac096a1e04db21858ccae4babf,
+        type: 2}
+      propertyPath: m_sightRadius
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 114669968887048894, guid: ef78beac096a1e04db21858ccae4babf,
+        type: 2}
+      propertyPath: m_sightRadius
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 114607638146840474, guid: ef78beac096a1e04db21858ccae4babf,
+        type: 2}
+      propertyPath: m_attackRadius
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 114607638146840474, guid: ef78beac096a1e04db21858ccae4babf,
+        type: 2}
+      propertyPath: m_sightRadius
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 114045184911676820, guid: ef78beac096a1e04db21858ccae4babf,
+        type: 2}
+      propertyPath: m_sightRadius
+      value: 10
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ef78beac096a1e04db21858ccae4babf, type: 2}

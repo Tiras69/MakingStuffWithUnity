@@ -2,11 +2,11 @@
 
 public interface IStateDescription
 {
-    GameObject GameObject { get; set; }
-
-    void OnStateStart();
-    void ExecuteBehaviour();
+    // GameObject GameObject { get; set; }
+    // 
+    // void OnStateStart();
+    // void ExecuteBehaviour();
     int GetPerceptionState();
-    void OnStateLeave();
-    void OnCollision( Collision _collision );
+    // void OnStateLeave();
+    // void OnCollision( Collision _collision );
 }
